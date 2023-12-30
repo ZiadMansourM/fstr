@@ -22,25 +22,38 @@ go get github.com/ZiadMansourM/fstr
 ```
 
 ## Usage
-```
+```Go
 package main
 
 import (
-    "fmt"
-    "github.com/ZiadMansourM/fstr"
+	"fmt"
+	"github.com/ZiadMansourM/fstr"
 )
 
 func main() {
-    data := map[string]interface{}{
-        "name": "John Doe",
-        "age":  30,
-        "gpa": 3.7498,
-    }
-    result, err := fstr.Interpolate("Hello {name}, you are {age} years old. My GPA is {gpa:.2f}.", data)
-    if err != nil {
-        // Handle error
-    }
-    fmt.Println(result)
+	// Data map containing various types of values.
+	data := map[string]interface{}{
+		"name":    "John Doe",
+		"age":     30,                  // integer value
+		"gpa":     3.7498,              // floating-point value
+		"balance": 123456.789,          // floating-point value for testing thousands separator
+		"total":   987654321.123456,    // floating-point value for testing combined thousands separator and precision
+	}
+
+	// Format string with various types of placeholders.
+	format := "Hello {name}, you are {age} years old. Your GPA is {gpa:.2f}. Your balance is {balance:,}. Your total assets are {total:,.2f}."
+
+	// Perform string interpolation using the fstr.Interpolate function.
+	result, err := fstr.Interpolate(format, data)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// Print the result.
+	fmt.Println(result)
+	// Expected output:
+	// Hello John Doe, you are 30 years old. Your GPA is 3.75. Your balance is 123,456. Your total assets are 987,654,321.12.
 }
 ```
 
