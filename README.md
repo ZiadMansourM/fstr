@@ -26,38 +26,37 @@ go get github.com/ZiadMansourM/fstr
 package main
 
 import (
-	"fmt"
-	
-	"github.com/ZiadMansourM/fstr"
+    "fmt"
+    "github.com/ZiadMansourM/fstr"
 )
 
 func main() {
-	// Standard string interpolation with formatting
-	fmt.Println(fstr.Eval(
-		"Hello, {name}! This is {person} {age} years old. With {balance:,.2f} USD in the bank. With GPA of {gpa:.2f}.",
-		map[string]interface{}{
-			"name":    "World",
-			"person":  "John Doe",
-			"age":     23,
-			"balance": 123456789.64789,
-			"gpa":     3.57869,
-		},
-	))
-	// Output:
-	// Hello, World! This is John Doe 23 years old. With 123,456,789.65 USD in the bank. With GPA of 3.58.
-
-	// Extended syntax for key-value pairing
-	fmt.Println(fstr.Eval(
-		"{name=} {age=} {gpa=:,.2f} {total=:,.3f}",
-		map[string]interface{}{
-			"name":  "Ziad Mansour",
-			"age":   23,
-			"gpa":   3.1495,
-			"total": 123456789.9787968,
-		},
-	))
-	// Output:
-	// name=Ziad Mansour age=23 gpa=3.15 total=123,456,789.979
+    // Standard string interpolation with formatting
+    fmt.Println(fstr.Eval(
+        "Hello, {name}! This is {person} {age} years old. With {balance:,.2f} USD in the bank. With GPA of {gpa:.2f}.",
+        map[string]interface{}{
+            "name":    "World",
+            "person":  "John Doe",
+            "age":     23,
+            "balance": 123456789.64789,
+            "gpa":     3.57869,
+        },
+    ))
+    // Output:
+    // Hello, World! This is John Doe 23 years old. With 123,456,789.65 USD in the bank. With GPA of 3.58.
+    
+    // Extended syntax for key-value pairing
+    fmt.Println(fstr.Eval(
+        "{name=} {age=} {gpa=:,.2f} {total=:,.3f}",
+        map[string]interface{}{
+            "name":  "Ziad Mansour",
+            "age":   23,
+            "gpa":   3.1495,
+            "total": 123456789.9787968,
+        },
+    ))
+    // Output:
+    // name=Ziad Mansour age=23 gpa=3.15 total=123,456,789.979
 }
 ```
 
