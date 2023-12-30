@@ -1,6 +1,16 @@
 /*
 Package fstr is a utility for string interpolation similar to Python's f-strings.
 It allows embedding expressions inside string literals for dynamic string formatting.
+
+The package provides an Interpolate function that replaces placeholders in a format string with values from a provided map. It supports both simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}), allowing flexible and dynamic formatting of strings.
+
+Usage example:
+
+	data := map[string]interface{}{"name": "John Doe", "balance": 123.456}
+	result, err := fstr.Interpolate("Hello {name}, your balance is {balance:.2f}", data)
+	// result: "Hello John Doe, your balance is 123.46"
+
+This function is particularly useful for templating and generating text dynamically where the structure of the text is fixed, but the values are variable.
 */
 package fstr
 
@@ -8,50 +18,95 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"strings"
 	"text/template"
 )
 
 // Interpolate performs string interpolation on the provided format string using the given data map.
-// It supports both simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}).
+// It replaces placeholders in the format like {key} or {key:format} with corresponding values from the data map.
 //
-// Placeholders should be in the form:
-//   - {key}: Replaced with the value of 'key' from the data map.
-//   - {key:format}: Replaced with the formatted value according to the format specifier (like .2f for float).
+// The function supports:
+//   - Simple placeholders like {key} which are replaced by the value of 'key' from the data map.
+//   - Formatted placeholders like {key:.2f} or {key:,} which are replaced with the value formatted according to the specifier.
 //
-// Usage example:
+// The function uses Go's text/template package for template processing and supports custom formatting through the formatNumber function.
 //
-//	data := map[string]interface{}{"name": "John Doe", "balance": 123.456}
-//	result, err := Interpolate("Hello {name}, your balance is {balance:.2f}", data)
-//	// result: "Hello John Doe, your balance is 123.46"
+// Arguments:
+//   - format: The format string containing placeholders.
+//   - data: A map of keys and values used to replace placeholders in the format string.
 //
-// Returns the interpolated string or an error if the template parsing or execution fails.
+// Returns:
+//   - The interpolated string or an error if the template parsing or execution fails.
 func Interpolate(format string, data map[string]interface{}) (string, error) {
 	format = preprocess(format)
-	t, err := template.New("fstr").Parse(format)
+	t, err := template.New("fstr").Funcs(template.FuncMap{
+		"formatNumber": formatNumber,
+	}).Parse(format)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template: %w", err)
 	}
 	var output bytes.Buffer
+	// convert any int value inside data to float64
+	for k, v := range data {
+		switch v.(type) {
+		case int:
+			data[k] = float64(v.(int))
+		default:
+			data[k] = v
+		}
+	}
 	if err := t.Execute(&output, data); err != nil {
 		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
 	return output.String(), nil
 }
 
-// preprocess prepares the format string for use with the Go text/template package.
-// It converts custom placeholders into a format compatible with text/template syntax.
-// Specifically:
-//   - Converts {key} to {{.key}}
-//   - Converts {key:format} to a printf directive (e.g., {{printf "%.2f" .key}})
-//
-// Assumes that format is well-formed and uses curly braces exclusively for defining placeholders.
+// preprocess converts placeholders in the format string into a syntax compatible with Go's text/template package.
+// It identifies and converts simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}).
 func preprocess(format string) string {
-	re := regexp.MustCompile(`{([a-zA-Z0-9_]+)(?::([.#0-9]*)f)?}`)
+	re := regexp.MustCompile(`{([a-zA-Z0-9_]+)(?::(,|\.([0-9]+)f|,\.([0-9]+)f))?}`)
+
 	return re.ReplaceAllStringFunc(format, func(m string) string {
 		matches := re.FindStringSubmatch(m)
-		if matches[2] != "" {
-			return fmt.Sprintf("{{printf \"%%%sf\" .%s}}", matches[2], matches[1])
+		switch {
+		case matches[2] == ",":
+			return fmt.Sprintf("{{formatNumber .%s \",\"}}", matches[1])
+		case matches[3] != "":
+			return fmt.Sprintf("{{formatNumber .%s \".%s\"}}", matches[1], matches[3])
+		case matches[4] != "":
+			return fmt.Sprintf("{{formatNumber .%s \",.%s\"}}", matches[1], matches[4])
+		default:
+			return fmt.Sprintf("{{.%s}}", matches[1])
 		}
-		return fmt.Sprintf("{{.%s}}", matches[1])
 	})
+}
+
+// formatNumber is a helper function that formats a number according to the given format specifier.
+// It supports formatting for thousands separators and decimal precision.
+func formatNumber(value float64, format string) string {
+	// Split the format string to identify thousands and decimal parts.
+	formatParts := strings.Split(format, ".")
+	if strings.Contains(formatParts[0], ",") && len(formatParts) == 1 {
+		intPart := fmt.Sprintf("%.0f", value) // Get the integer part
+		for i := len(intPart) - 3; i > 0; i -= 3 {
+			intPart = intPart[:i] + "," + intPart[i:]
+		}
+		return intPart
+	} else if strings.Contains(formatParts[0], ",") && len(formatParts) == 2 {
+		// example format: {total:,.3f} and total is 123456789.9787968 => 123,456,789.979
+		strNumber := fmt.Sprintf("%."+formatParts[1]+"f", value)
+		parts := strings.Split(strNumber, ".")
+		decimalPart := parts[1]
+		intPart := parts[0]
+		for i := len(intPart) - 3; i > 0; i -= 3 {
+			intPart = intPart[:i] + "," + intPart[i:]
+		}
+		return intPart + "." + decimalPart
+	} else if !strings.Contains(formatParts[0], ",") && len(formatParts) == 2 {
+		fmt.Println("Correct Here")
+		// example format: {gpa:.4f} and gpa is 3.165789 => 3.1658
+		return fmt.Sprintf("%."+formatParts[1]+"f", value)
+	} else {
+		panic("Invalid format")
+	}
 }

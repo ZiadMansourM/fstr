@@ -28,6 +28,19 @@ func TestInterpolate(t *testing.T) {
 			},
 			want: "My name is Ziad Mansour and I am 23 years old. My GPA is 3.15.",
 		},
+		{
+			name:   "Comma formatting",
+			format: "{name} - {age} - {balance:,} - {gpa:.4f} - {total:,.3f} - {sum:,}",
+			data: map[string]interface{}{
+				"name":    "Ziad Mansour",
+				"age":     23,
+				"gpa":     3.1657,
+				"balance": 123456789.111,
+				"sum":     123456789,
+				"total":   123456789.9787968,
+			},
+			want: "Ziad Mansour - 23 - 123,456,789 - 3.1657 - 123,456,789.979 - 123,456,789",
+		},
 		// Add more test cases as needed here.
 	}
 
