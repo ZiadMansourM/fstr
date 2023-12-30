@@ -18,6 +18,16 @@ func TestInterpolate(t *testing.T) {
 			},
 			want: "My name is Ziad Mansour and I am 23 years old.",
 		},
+		{
+			name:   "Formatted interpolation",
+			format: "My name is {name} and I am {age} years old. My GPA is {gpa:.2f}.",
+			data: map[string]interface{}{
+				"name": "Ziad Mansour",
+				"age":  23,
+				"gpa":  3.14959265359,
+			},
+			want: "My name is Ziad Mansour and I am 23 years old. My GPA is 3.15.",
+		},
 		// Add more test cases as needed here.
 	}
 
