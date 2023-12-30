@@ -61,6 +61,39 @@ func Interpolate(format string, data map[string]interface{}) (string, error) {
 	return output.String(), nil
 }
 
+// Eval is a convenience wrapper around Interpolate. It takes a format string and a data map,
+// interpolates the format string with values from the data map, and returns the result.
+// If an error occurs during interpolation, Eval panics with that error.
+//
+// Use Eval when you want a simple way to use string interpolation without handling errors each time.
+// It's especially useful in scenarios where you're sure the format string and data won't cause errors,
+// or in quick scripts or applications where error handling isn't critical. For more robust applications,
+// consider using Interpolate directly and handling errors appropriately.
+//
+// Parameters:
+//   - format: A string with placeholders to be replaced by values from the data map.
+//     Placeholders are in the form {key} or {key:format}.
+//   - data:   A map[string]interface{} where each key corresponds to a placeholder in the format string,
+//     and the associated value is what you want to replace the placeholder with.
+//
+// Returns:
+//   - A string with all placeholders replaced by corresponding data values.
+//
+// Panics:
+//   - If an error occurs during interpolation, Eval panics with the error returned by Interpolate.
+//
+// Example usage:
+//
+//	result := fstr.Eval("Hello, {name}!", map[string]interface{}{"name": "Alice"})
+//	fmt.Println(result) // Prints: Hello, Alice!
+func Eval(format string, data map[string]interface{}) string {
+	result, err := Interpolate(format, data)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
 // preprocess converts placeholders in the format string into a syntax compatible with Go's text/template package.
 // It identifies and converts simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}).
 func preprocess(format string) string {
