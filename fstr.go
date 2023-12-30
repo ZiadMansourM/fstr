@@ -103,7 +103,6 @@ func formatNumber(value float64, format string) string {
 		}
 		return intPart + "." + decimalPart
 	} else if !strings.Contains(formatParts[0], ",") && len(formatParts) == 2 {
-		fmt.Println("Correct Here")
 		// example format: {gpa:.4f} and gpa is 3.165789 => 3.1658
 		return fmt.Sprintf("%."+formatParts[1]+"f", value)
 	} else {
