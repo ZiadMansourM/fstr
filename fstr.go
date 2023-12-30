@@ -97,17 +97,39 @@ func Eval(format string, data map[string]interface{}) string {
 // preprocess converts placeholders in the format string into a syntax compatible with Go's text/template package.
 // It identifies and converts simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}).
 func preprocess(format string) string {
-	re := regexp.MustCompile(`{([a-zA-Z0-9_]+)(?::(,|\.([0-9]+)f|,\.([0-9]+)f))?}`)
-
+	re := regexp.MustCompile(`{([a-zA-Z0-9_]+)(=)?(?::(,|\.([0-9]+)f|,\.([0-9]+)f))?}`)
 	return re.ReplaceAllStringFunc(format, func(m string) string {
 		matches := re.FindStringSubmatch(m)
 		switch {
-		case matches[2] == ",":
+		case matches[2] == "=":
+			/*
+				Handle all four cases:
+				- {name=} => name={{.name}}
+				- {balance=:,} => balance={{formatNumber .balance ","}}
+				- {total:.3f} => total={{formatNumber .total ".3"}}
+				- {balance=:,.2f} => balance={{formatNumber .balance ",.2"}}
+			*/
+			if matches[3] == "," {
+				// example format: {balance:,} and balance is 123456789.111 => 123,456,789
+				return fmt.Sprintf("%[1]s={{formatNumber .%[1]s \",\"}}", matches[1])
+			} else if matches[4] != "" {
+				// example format: {total:.3f} and total is 123456789.9787968 => 123,456,789.979
+				return fmt.Sprintf("%[1]s={{formatNumber .%[1]s \".%s\"}}", matches[1], matches[4])
+			} else if matches[5] != "" {
+				// example format: {total:,.3f} and total is 123456789.9787968 => 123,456,789.979
+				return fmt.Sprintf("%[1]s={{formatNumber .%[1]s \",.%s\"}}", matches[1], matches[5])
+			} else {
+				return fmt.Sprintf("%[1]s={{.%[1]s}}", matches[1])
+			}
+		case matches[3] == ",":
+			// example format: {balance:,} and balance is 123456789.111 => 123,456,789
 			return fmt.Sprintf("{{formatNumber .%s \",\"}}", matches[1])
-		case matches[3] != "":
-			return fmt.Sprintf("{{formatNumber .%s \".%s\"}}", matches[1], matches[3])
 		case matches[4] != "":
-			return fmt.Sprintf("{{formatNumber .%s \",.%s\"}}", matches[1], matches[4])
+			// example format: {total:.3f} and total is 123456789.9787968 => 123,456,789.979
+			return fmt.Sprintf("{{formatNumber .%s \".%s\"}}", matches[1], matches[4])
+		case matches[5] != "":
+			// example format: {total:,.3f} and total is 123456789.9787968 => 123,456,789.979
+			return fmt.Sprintf("{{formatNumber .%s \",.%s\"}}", matches[1], matches[5])
 		default:
 			return fmt.Sprintf("{{.%s}}", matches[1])
 		}
