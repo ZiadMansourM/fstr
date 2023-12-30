@@ -34,8 +34,9 @@ func main() {
     data := map[string]interface{}{
         "name": "John Doe",
         "age":  30,
+        "gpa": 3.7498,
     }
-    result, err := fstr.Interpolate("Hello {name}, you are {age} years old.", data)
+    result, err := fstr.Interpolate("Hello {name}, you are {age} years old. My GPA is {gpa:.2f}.", data)
     if err != nil {
         // Handle error
     }
