@@ -1,6 +1,6 @@
 # fstr
 
-[![Build and Test fstr](https://github.com/ZiadMansourM/fstr/actions/workflows/main.yml/badge.svg)](https://github.com/ZiadMansourM/fstr/actions/workflows/main.yml) [![Go 1.21.5](https://img.shields.io/badge/go-v1.21.5-<COLOR>.svg)](https://shields.io/)
+![Build and Test fstr](https://github.com/ZiadMansourM/fstr/workflows/Build%20and%20Test%20fstr/badge.svg) [![Go 1.21.5](https://img.shields.io/badge/go-v1.21.5-<COLOR>.svg)](https://shields.io/)
 
 ![DALL·E 2023-12-30 13 16 30 - Create a logo with the text 'fstr' in all lowercase letters, featuring a sleek, modern font on a solid black background  The design should be minimali](https://github.com/ZiadMansourM/fstr/assets/64917739/10fbd823-a649-4657-865f-1eb6fca9781b)
 
