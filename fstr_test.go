@@ -78,9 +78,21 @@ func TestEval(t *testing.T) {
 			},
 			want: "Ziad Mansour - 23 - 123,456,789 - 3.1657 - 123,456,789.979 - 123,456,789",
 		},
+		{
+			name:   "Advanced cases",
+			format: "{name=} - {age=} - {balance=:,} - {gpa=:.4f} - {total=:,.3f} - {sum=:,.2f}",
+			data: map[string]interface{}{
+				"name":    "Ziad Mansour",
+				"age":     23,
+				"gpa":     3.1657,
+				"balance": 123456789.111,
+				"sum":     123456789,
+				"total":   123456789.9787968,
+			},
+			want: "name=Ziad Mansour - age=23 - balance=123,456,789 - gpa=3.1657 - total=123,456,789.979 - sum=123,456,789.00",
+		},
 		// Add more test cases as needed here.
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := Eval(tt.format, tt.data)

@@ -1,16 +1,32 @@
 /*
-Package fstr is a utility for string interpolation similar to Python's f-strings.
-It allows embedding expressions inside string literals for dynamic string formatting.
+Package fstr, akin to Python's f-strings, is a Go utility that simplifies string formatting with interpolation.
+It seamlessly integrates expressions into string literals for dynamic construction.
+Enhancing readability and efficiency in string formatting.
+This package introduces two primary functions: `Interpolate` and `Eval`.
 
-The package provides an Interpolate function that replaces placeholders in a format string with values from a provided map. It supports both simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}), allowing flexible and dynamic formatting of strings.
+The `Interpolate` function replaces placeholders within a string with values from a provided map. It supports simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}) for various formatting options.
 
-Usage example:
+Example of `Interpolate` usage:
 
-	data := map[string]interface{}{"name": "John Doe", "balance": 123.456}
-	result, err := fstr.Interpolate("Hello {name}, your balance is {balance:.2f}", data)
-	// result: "Hello John Doe, your balance is 123.46"
+	var template = "Hello {name}, your balance is {balance:.2f}"
+	var data = map[string]interface{}{"name": "John Doe", "balance": 123.456}
+	if message, err := fstr.Interpolate(template, data); err == nil {
+		fmt.Println(message) // Output: "Hello John Doe, your balance is 123.46"
+	}
 
-This function is particularly useful for templating and generating text dynamically where the structure of the text is fixed, but the values are variable.
+The `Eval` function takes this concept further by allowing more complex expressions and direct invocation within print functions. It evaluates the string with embedded expressions directly and returns the formatted string.
+
+Example of `Eval` usage:
+
+	fmt.Println(fstr.Eval(
+		"Welcome {name}, your registration is {status}.",
+		map[string]interface{}{
+			"name": "Jane Doe",
+			"status": "complete",
+		}
+	)) // Output: "Welcome Jane Doe, your registration is complete."
+
+Both functions are invaluable for generating dynamic text where the template remains consistent, but the data changes, facilitating ease of maintenance and clarity in code involving string operations.
 */
 package fstr
 

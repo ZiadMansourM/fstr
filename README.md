@@ -26,34 +26,37 @@ go get github.com/ZiadMansourM/fstr
 package main
 
 import (
-	"fmt"
-	"github.com/ZiadMansourM/fstr"
+    "fmt"
+    "github.com/ZiadMansourM/fstr"
 )
 
 func main() {
-	// Data map containing various types of values.
-	data := map[string]interface{}{
-		"name":    "John Doe",
-		"age":     30,                  // integer value
-		"gpa":     3.7498,              // floating-point value
-		"balance": 123456.789,          // floating-point value for testing thousands separator
-		"total":   987654321.123456,    // floating-point value for testing combined thousands separator and precision
-	}
-
-	// Format string with various types of placeholders.
-	format := "Hello {name}, you are {age} years old. Your GPA is {gpa:.2f}. Your balance is {balance:,}. Your total assets are {total:,.2f}."
-
-	// Perform string interpolation using the fstr.Interpolate function.
-	result, err := fstr.Interpolate(format, data)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	// Print the result.
-	fmt.Println(result)
-	// Expected output:
-	// Hello John Doe, you are 30 years old. Your GPA is 3.75. Your balance is 123,456. Your total assets are 987,654,321.12.
+    // Standard string interpolation with formatting
+    fmt.Println(fstr.Eval(
+        "Hello, {name}! This is {person} {age} years old. With {balance:,.2f} USD in the bank. With GPA of {gpa:.2f}.",
+        map[string]interface{}{
+            "name":    "World",
+            "person":  "John Doe",
+            "age":     23,
+            "balance": 123456789.64789,
+            "gpa":     3.57869,
+        },
+    ))
+    // Output:
+    // Hello, World! This is John Doe 23 years old. With 123,456,789.65 USD in the bank. With GPA of 3.58.
+    
+    // Extended syntax for key-value pairing
+    fmt.Println(fstr.Eval(
+        "{name=} {age=} {gpa=:,.2f} {total=:,.3f}",
+        map[string]interface{}{
+            "name":  "Ziad Mansour",
+            "age":   23,
+            "gpa":   3.1495,
+            "total": 123456789.9787968,
+        },
+    ))
+    // Output:
+    // name=Ziad Mansour age=23 gpa=3.15 total=123,456,789.979
 }
 ```
 
