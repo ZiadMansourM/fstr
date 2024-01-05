@@ -110,6 +110,20 @@ func Eval(format string, data map[string]interface{}) string {
 	return result
 }
 
+// Print is a convenience wrapper around Eval. It takes a format string and a data map,
+// interpolates the format string with values from the data map, and prints the result to stdout.
+// If an error occurs during interpolation, Print panics with that error.
+func Print(format string, data map[string]interface{}) {
+	fmt.Print(Eval(format, data))
+}
+
+// Println is a convenience wrapper around Eval. It takes a format string and a data map,
+// interpolates the format string with values from the data map, and prints the result to stdout.
+// If an error occurs during interpolation, Println panics with that error.
+func Println(format string, data map[string]interface{}) {
+	fmt.Println(Eval(format, data))
+}
+
 // preprocess converts placeholders in the format string into a syntax compatible with Go's text/template package.
 // It identifies and converts simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}).
 func preprocess(format string) string {
