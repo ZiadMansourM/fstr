@@ -1,10 +1,13 @@
 /*
 Package fstr, akin to Python's f-strings, is a Go utility that simplifies string formatting with interpolation.
-It seamlessly integrates expressions into string literals for dynamic construction.
-Enhancing readability and efficiency in string formatting.
-This package introduces two primary functions: `Interpolate` and `Eval`.
+It seamlessly integrates expressions into string literals for dynamic construction,
+enhancing readability and efficiency in string formatting. This package introduces primary functions:
+`Interpolate`, `Eval`, `Print`, and `Println`.
 
-The `Interpolate` function replaces placeholders within a string with values from a provided map. It supports simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}) for various formatting options.
+Interpolate:
+The `Interpolate` function replaces placeholders within a string with values from a provided map.
+It supports simple placeholders (e.g., {key}) and formatted placeholders (e.g., {key:.2f}) for various
+formatting options. This function is useful for when you need the interpolated string returned for further processing.
 
 Example of `Interpolate` usage:
 
@@ -14,7 +17,10 @@ Example of `Interpolate` usage:
 		fmt.Println(message) // Output: "Hello John Doe, your balance is 123.46"
 	}
 
-The `Eval` function takes this concept further by allowing more complex expressions and direct invocation within print functions. It evaluates the string with embedded expressions directly and returns the formatted string.
+Eval:
+The `Eval` function is a convenience wrapper around `Interpolate`. It evaluates the string with embedded
+expressions directly and returns the formatted string or panics if there's an error. This is useful for quick
+scripts or applications where error handling isn't critical.
 
 Example of `Eval` usage:
 
@@ -26,7 +32,24 @@ Example of `Eval` usage:
 		}
 	)) // Output: "Welcome Jane Doe, your registration is complete."
 
-Both functions are invaluable for generating dynamic text where the template remains consistent, but the data changes, facilitating ease of maintenance and clarity in code involving string operations.
+Print and Println:
+The `Print` and `Println` functions extend the concept of `Eval` by directly printing the formatted string
+to standard output. `Print` does not add a newline after the output, whereas `Println` does. These functions are
+convenient for direct output scenarios.
+
+Example usage of `Println`:
+
+	fstr.Println(
+		"Good day, {name}! Your score is {score}.",
+		map[string]interface{}{
+			"name": "Alice",
+			"score": 92,
+		}
+	) // Output: "Good day, Alice! Your score is 92."
+
+Both `Interpolate` and `Eval`, along with the printing functions, are invaluable for generating dynamic text
+where the template remains consistent, but the data changes, facilitating ease of maintenance and clarity in code
+involving string operations.
 */
 package fstr
 
